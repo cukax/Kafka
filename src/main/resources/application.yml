@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: Kafka
+    version: 1.0.0
+
+server:
+  port: 8090
+
+app:
+  kafka:
+    bootstrap-servers: localhost:9092
+    group-id: spring-service-group
+    topics:
+      user: user.events
+      user.validation: user.validation.events
+    schema-registry-url: http://localhost:8081
