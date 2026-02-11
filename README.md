@@ -69,7 +69,7 @@ The project is configured to use the Confluent repository:
 ## 📂 Project Structure
 
 ``` 
-kafka-cero-a-experto/
+kafka/
 ├── src/
 │   ├── main/
 │   │   ├── java/
