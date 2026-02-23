@@ -58,4 +58,28 @@ public class UserDLT {
         // Assert: verify the DLT handler was invoked
         verify(userKafkaEventConsumer, timeout(10000)).listenDLT(any());
     }
+
+    @Test
+    void createUser_EventRetriedAndRoutedToDLT_WhenSpecificConsumerThrowsRuntimeException() {
+        // Arrange
+        doThrow(new RuntimeException("forced RuntimeException for retries"))
+                .when(userCreatedSpecificConsumer).accept(any());
+
+        UserCreatedEvent event = UserCreatedEvent.newBuilder()
+                .setId(1000L)
+                .setFirstname("Retry")
+                .setLastname("Test")
+                .setEmail("retry@test.com")
+                .setRole("USER")
+                .setTimestamp(System.currentTimeMillis())
+                .build();
+
+        // Act
+        kafkaTemplate.send(USER_EVENT_TOPIC, event);
+
+        // Assert: verify the consumer was called multiple times (4 attempts)
+        verify(userCreatedSpecificConsumer, timeout(30000).times(4)).accept(any());
+        // Verify final call to DLT
+        verify(userKafkaEventConsumer, timeout(10000)).listenDLT(any());
+    }
 }
